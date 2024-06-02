@@ -8,7 +8,7 @@ class GetStatusTransactionApiControllerTest extends TestCase
 {
     public function test_successful_get_status_transaction()
     {
-        $requestId = '59106';
+        $requestId = '203011';
         $request = $this->get(sprintf("/api/transaction/status/%s", $requestId),
             [
                 'Accept' => 'application/json',

@@ -9,6 +9,7 @@ use App\Requests\TransactionInitRequest;
 use Http;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Cache;
 use Symfony\Component\HttpFoundation\Response as HttpResponse;
 
 class InitTransactionApiController extends Controller
@@ -50,7 +51,7 @@ class InitTransactionApiController extends Controller
             ->json();
 
 
-        if (!App::isProduction()) {
+        if (App::isProduction()) {
             HttpRequestLog::factory()->register($body, sprintf("RQ_%s", $request->get('buy_order')), 'init/');
             HttpRequestLog::factory()->register($response, sprintf("RS_%s", $request->get('buy_order')), 'init/');
         }
@@ -58,6 +59,8 @@ class InitTransactionApiController extends Controller
         if ($response["status"]["status"] === 'FAILED' && $response["status"]["reason"] === 401) {
             return response()->json((object)['message' => $response["status"]["message"]], HttpResponse::HTTP_UNAUTHORIZED);
         } else if ($response["status"]["status"] === 'OK') {
+            Cache::put('buy_order_' . $request->get('buy_order'), $response['requestId'], now()->addMinutes(60));
+
             return response()->json((object)[
                 'url' => $response['processUrl'],
                 'token' => $response['requestId'],
