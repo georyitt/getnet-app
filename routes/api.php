@@ -19,4 +19,5 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 
 Route::post('/transaction/init', \App\Http\Controllers\Api\Transaction\InitTransactionApiController::class);
+Route::post('/transaction/notify', \App\Http\Controllers\Api\Transaction\NotificationTransactionApiController::class);
 Route::get('/transaction/status/{requestId}', \App\Http\Controllers\Api\Transaction\GetStatusTransactionApiController::class);
